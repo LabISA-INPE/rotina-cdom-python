@@ -22,7 +22,7 @@ Observações:
 * Caso seja necessário, também é possível modificar o nome do ambiente (neste caso está com o nome cdom).
 
 ```console
-conda env create --name cdom --file cdom.yaml
+conda env create --name cdom --file cdom.yam
 ```
 
 Após isso, ative o ambiente:
@@ -31,10 +31,34 @@ Após isso, ative o ambiente:
 conda activate cdom
 ```
 
-Por fim, rode o código em Python:
+Crie uma pasta outputs onde, por padrão, será gerado os resultados e rode o código em Python:
 
 ```console
 python roda_CDOM_correto.py
 ```
 
-Caso queira testar o código, há um diretório chamado input-example com um arquivo de entrada, que devem ser abertos ao rodar o código. Além disso, temos um exemplo de saída da entrada de exemplo na pasta output-example.
+Caso queira testar o código, há um diretório chamado input-exemplo com um arquivo de entrada e um arquivo "input.txt" de exemplo que deve ser substituído no txt da raiz do código, que deve ser abertos ao rodar o códig. Além disso, temos um exemplo de saída da entrada de exemplo na pasta output-exemplo.
+
+## Preparando a tabela com as medidas
+
+Para iniciar o processamento, é preciso que a tabela com os dados de saída do espectrofotômetro tenha 1 nm de resolução espectral, caso não esteja, é necessário interpolar. Esse ajuste pode ser feito ao executar o código em Python (script com o nome interpolacao_cdom.py) com a tabela original em formato ".xls" e a tabela interpolada será salva em formato no mesmo formato.
+
+Com a tabela já interpolada, ela deve ser organizada com as colunas na sequência: wavelength, branco, amostras, branco. Não é necessária a inclusão de uma coluna de leitura do ar. O branco se refere à leitura "água vs água" feita no espectrofotômetro.
+
+É importante que a tabela seja dividida em grupos de amostras de mesmo tamanho entre os “brancos”. Por exemplo, se foram coletadas 15 amostras, poderão ser feitos 3 grupos de 5 amostras entre brancos ou 5 grupos de 3 amostras. É importante ter atenção à essa formatação, pois ela vai definir uma modificação essencial no código.
+
+A amostra de branco deve ser escolhida pelo usuário, levando em consideração o dado mais estável. Se assim optar, também poderá utilizar uma média dos brancos entre os grupos de leituras que foram feitas no espectrofotômetro . Recomenda-se que se use o primeiro branco como “branco1”; o segundo branco pode ser uma média entre os grupos 2 e 3 ou somente 3; e o último branco uma média do grupo 4.
+
+## Iniciando o processamento em Python
+
+Ao clonar o código e abrir em um editor de código (foi utilizado o VS Code)  estarão os arquivos: *driver_ag.py*, *least_squares.py*, *roda_CDOM_correto.py* e a rotina de interpolação *interpolacao_cdom.py*.
+
+Já com os dados de entrada organizados na tabela ".xlsx", o usuário deve fazer uma modificação no arquivo *input.txt*, no valor *num_grps_amos* (adicionar depois dos dois pontos), levando em consideração os grupos que foram separados. Por exemplo, se foram separados os grupos a cada 3 amostras, adicione o número 3 a variável. Há um exemplo do arquivo input.txt na pasta input-exemplo, para esta e todas as outras variáveis modificáveis.
+
+**Atenção:** O dado de entrada deve ser selecionado corretamente, caso contrário, uma mensagem de "Arquivo não encontrado" será exibida no console. Também deve ser criada uma pasta "outputs", onde, por padrão, ficarão salvos os dados de saída do processamento (que podem ser alteradas o caminho no arquivo input.txt).
+
+No mesmo txt, o usuário poderá alterar o título do gráfico, a pasta de saída (com o nome do arquivo) do gráfico, dos dados do acom e finais, nas variáveis titulo_grafico, path_grafico, path_cdom e path_dados_finais respectivamente.
+
+Com os dados de entrada e as alterações feitas no arquivo *input.txt*, o código poderá ser executado e, com o comando python roda_CDOM_correto.py. A janela de indicação de arquivo será aberta e o usuário deverá indicar o arquivo “.xlsx” interpolado e um gráfico será exibido. As tabelas (cdom e dados finais) de saída serão salvas automaticamente com o gráfico. Os dados serão processados no intervalo entre 400 nm e 700 nm. Esse intervalo não poderá ser alterado devido ao ajuste exponencial que é aplicado nos dados de saída.
+
+> *Fonte: Texto de Raianny Wanderley (Autora do código em MatLab) modificado por Gustavo Ando e Kauã Renó (Conversão para Python)*

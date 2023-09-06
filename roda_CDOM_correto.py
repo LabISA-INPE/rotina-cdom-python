@@ -9,6 +9,21 @@ def least_squares(x0, spec, l):
     y = np.sum((spec - x0[0] * np.exp(-x0[1] * (l - 532))) ** 2)
     return y
 
+# Lendo txt com as variáveis
+with open('input.txt', 'r') as arquivo:
+    linhas = arquivo.readlines()
+
+# Adicionando as variáveis no código
+for linha in linhas:
+    chave, valor = linha.strip().split(':')
+    if chave == 'num_grps_amos': num_grps_amos = int(valor.strip())
+    elif chave == 'path_cdom': path_cdom = valor.strip()
+    elif chave == 'path_dados_finais': path_dados_finais = valor.strip()
+    elif chave == 'titulo_grafico': titulo_grafico = valor.strip()
+    elif chave == 'path_grafico': path_grafico = valor.strip()
+x = num_grps_amos + 1
+y = num_grps_amos - 1
+
 root = tk.Tk()
 root.withdraw()
 
@@ -19,19 +34,9 @@ except FileNotFoundError:
 
 print("Arquivo aberto")
 
-# delimit = '\t'
-
-# with open(filename, 'r') as arquivo:
-#     tline = arquivo.readline()  # Lê uma linha do arquivo
-
-# numcols = tline.count(delimit) + 1
-
-# del_repeated = '%t ' * numcols
-# a = del_repeated.strip()
-
 np.set_printoptions(suppress=True, precision=4)
 
-dados = pd.read_csv(filename, delimiter='\t')
+dados = pd.read_csv(filename, sep=";")
 
 # Criação da matriz preenchida com NaN
 matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
@@ -41,27 +46,21 @@ for i in range(dados.shape[1]):
     matrix[:,i] = dados.iloc[:, i]
 
 # Inicializa ACDOM com NaNs
-# ACDOM = np.empty((581,15))
 ACDOM = np.empty_like(matrix)
 ACDOM = ACDOM[:, :-1]
 
-print(matrix.shape[1])
+ACDOM[:, 0] = matrix[:, 0]
 
 # Itera para cada grupo de 7 colunas
-for i in range(1, ((matrix.shape[1] - 1) // 7) + 1):
-    for ii in range(1, 8):
-        ACDOM[:, 0] = matrix[:, 0]
-        ACDOM[:, (ii + ((i - 1) * 7) + 1) - 1] = matrix[:, (ii + ((i - 1) * 7) + 2) - 1] - matrix[:, (7 * i - 5) - 1]
-
-# np.savetxt('ACDOM3.txt', ACDOM, fmt='%f', delimiter='\t')
+for i in range(1, ((matrix.shape[1] - 1) // x) + 1):
+    for ii in range(1, x + 1):
+        ACDOM[:, (ii + ((i - 1) * x) + 1) - 1] = matrix[:, (ii + ((i - 1) * x) + 2) - 1] - matrix[:, (x * i - y) - 1]
 
 wlg = ACDOM[:, 0]
 
 L = 0.1 # Comprimento da Cubeta em metro
 
 acdom = ACDOM[:, 1:] * 2.303 / L
-
-# np.savetxt('acdom4.txt', acdom, fmt='%f', delimiter='\t')
 
 p1 = np.where(wlg == 750)[0][0]  # Encontra o índice do primeiro valor igual a 750
 p2 = np.where(wlg == 800)[0][0]  # Encontra o índice do primeiro valor igual a 800
@@ -72,10 +71,10 @@ for ii in range(acdom.shape[0]):
     acdom1[ii, :] = acdom[ii, :] - np.mean(acdom[p1:p2, :], axis=0)
 
 df = pd.DataFrame(acdom1)
-df.to_excel('outputs/acdom1.xlsx', index = False)
+df.to_excel(path_cdom, index = False)
 
 A = np.empty((len(wlg), 2))
-# var = np.zeros(acdom1.shape[1])
+
 acdomcor = np.zeros((299, 14))
 
 A[:, 0] = wlg
@@ -96,21 +95,13 @@ for iii in range(acdom1.shape[1]):
     x1 = fmin(least_squares, x0, args=(a_g, wl), **opts)
 
     acdomcor[:, iii] = a_g[np.where(wl == 440)[0][0]] * np.exp(-x1[1] * (wl - 440))
-    # var[iii] = x1[1]
 
-# np.savetxt('A.txt', A, fmt='%f', delimiter='\t')
-
-# np.savetxt('wl.txt', wl, fmt='%f', delimiter='\t')
-# np.savetxt('a_g.txt', a_g, fmt='%f', delimiter='\t')
-
-# np.savetxt('acdomcor.txt', acdomcor, fmt='%f', delimiter='\t')
-
-# Crie o gráfico
+# Criando o gráfico
 figura = plt.figure()
 plt.plot(wl, acdomcor, linewidth=2)
 
-# Configuração do gráfico
-plt.title('Coeficiente de Absorção do CDOM - Promissao (Ago/22)', fontname='AvantGarde', fontsize=20, fontweight='bold')
+# Configurações do gráfico
+plt.title(titulo_grafico, fontname='AvantGarde', fontsize=20, fontweight='bold')
 plt.xlabel('Comprimento de Onda (nm)', fontname='Helvetica', fontsize=18)
 plt.ylabel('a$_{cdom}$ (m$^{-1}$)', fontname='Helvetica', fontsize=18)
 plt.tick_params(labelsize=16)
@@ -125,11 +116,11 @@ plt.gca().spines['right'].set_visible(False)
 plt.gca().xaxis.set_tick_params(width=1)
 plt.gca().yaxis.set_tick_params(width=1)
 
-plt.savefig('outputs/grafico.jpg')
+plt.savefig(path_grafico)
 
 # Salvando dados no excel
 dados_final = pd.DataFrame(wl)
 dados_final = pd.concat([dados_final, pd.DataFrame(acdomcor)], axis=1)
-dados_final.to_excel('outputs/dados_finais.xlsx', header=False, index=False)
+dados_final.to_excel(path_dados_finais, header=False, index=False)
 
 plt.show()
