@@ -1,0 +1,5 @@
+num_grps_amos: 6
+path_cdom: outputs/acdom1.xlsx
+path_dados_finais: outputs/dados_finais.xlsx
+titulo_grafico: Coeficiente de Absorção do CDOM - Promissao (Ago/22)
+path_grafico: outputs/grafico.jpg
