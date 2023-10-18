@@ -15,7 +15,11 @@ Clone o repositório com o comando:
 git clone https://github.com/LabISA-INPE/rotina-cdom-python.git
 ```
 
-Com o Anaconda Prompt e na raiz do projeto, instale as bibliotecas necessários no arquivo de ambiente:
+Com o Anaconda Prompt e na **raiz do projeto**, instale as bibliotecas necessários no arquivo de ambiente:
+
+```console
+cd path/rotina-cdom-python
+```
 
 Observações:
 * Confire o nome e o caminho do arquivo de ambiente e, caso necessário, modifique na linha de comando abaixo.
@@ -31,17 +35,39 @@ Após isso, ative o ambiente:
 conda activate cdom
 ```
 
-Crie uma pasta outputs onde, por padrão, será gerado os resultados e rode o código em Python:
+Rode o código em Python:
 
 ```console
-python roda_CDOM_correto.py
+python main.py
 ```
 
-Caso queira testar o código, há um diretório chamado input-exemplo com um arquivo de entrada e um arquivo "input.txt" de exemplo que deve ser substituído no txt da raiz do código, que deve ser abertos ao rodar o códig. Além disso, temos um exemplo de saída da entrada de exemplo na pasta output-exemplo.
+Caso queira testar o código, há um diretório chamado input-exemplo com um arquivo de entrada. Além disso, temos um exemplo de saída da entrada de exemplo na pasta output-exemplo.
+
+## Interface
+
+Depois de executar o código main.py, uma interface gráfica irá aparecer com os seguintes campos:
+
+**Número de grupo de amostras**: onde você deve colocar o número de amostras;
+
+**Caminho do output do arquivo CDOM**: selecione/criei o caminho e de o nome do arquivo que será salvo com os dados do CDOM;
+
+**Caminho do output do arquivo dos dados finais**: selecione/criei o caminho e de o nome do arquivo que será salvo com os dados finais da rotina;
+
+**Título do gráfico**: Digite o título do gráfico;
+
+**Caminho do output do gráfico**: selecione/criei o caminho e de o nome do arquivo que ficará salvo o gráfico gerado pela rotina;
+
+**Selecione o Arquivo para ánalise**: selecione o arquivo com os dados a serem análisados;
+
+**Iniciar rotina**: clique para começar a ánalise.
+
+#
+
+**Importante**: em caso de erro confira o arquivo selecionado para ánalise.
 
 ## Preparando a tabela com as medidas
 
-Para iniciar o processamento, é preciso que a tabela com os dados de saída do espectrofotômetro tenha 1 nm de resolução espectral, caso não esteja, é necessário interpolar. Esse ajuste pode ser feito ao executar o código em Python (script com o nome interpolacao_cdom.py) com a tabela original em formato ".xls" e a tabela interpolada será salva em formato no mesmo formato.
+Para iniciar o processamento, é preciso que a tabela com os dados de saída do espectrofotômetro tenha 1 nm de resolução espectral, caso não esteja, é necessário interpolar. Esse ajuste pode ser feito ao executar o código em Python (script com o nome interpolacao_cdom.py) com a tabela original em formato ".xls" e a tabela interpolada será salva no formato ".csv".
 
 Com a tabela já interpolada, ela deve ser organizada com as colunas na sequência: wavelength, branco, amostras, branco. Não é necessária a inclusão de uma coluna de leitura do ar. O branco se refere à leitura "água vs água" feita no espectrofotômetro.
 

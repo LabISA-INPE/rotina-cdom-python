@@ -5,6 +5,7 @@ import csv
 # from tkinter import filedialog
 from scipy.optimize import fmin
 import matplotlib.pyplot as plt
+from tkinter import messagebox
 
 def roda_CDOM_correto():
     def least_squares(x0, spec, l):
@@ -32,65 +33,73 @@ def roda_CDOM_correto():
 
     np.set_printoptions(suppress=True, precision=4)
 
-    dados = pd.read_csv(path_arquivo, sep=";") 
+    try:
+        dados = pd.read_csv(path_arquivo, sep=";") 
+    except:
+        messagebox.showerror(title="Formato de arquivo errado!!", message="O arquivo selecionado para ánalise não está no formato "".csv"" ")
+        return
 
-    # Criação da matriz preenchida com NaN
-    matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
+    try:
+        # Criação da matriz preenchida com NaN
+        matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
 
-    # Preenche a matriz com os valores convertidos
-    for i in range(dados.shape[1]):
-        matrix[:,i] = dados.iloc[:, i]
+        # Preenche a matriz com os valores convertidos
+        for i in range(dados.shape[1]):
+            matrix[:,i] = dados.iloc[:, i]
 
-    # Inicializa ACDOM com NaNs
-    ACDOM = np.empty_like(matrix)
-    ACDOM = ACDOM[:, :-1]
+        # Inicializa ACDOM com NaNs
+        ACDOM = np.empty_like(matrix)
+        ACDOM = ACDOM[:, :-1]
 
-    ACDOM[:, 0] = matrix[:, 0]
+        ACDOM[:, 0] = matrix[:, 0]
 
-    # Itera para cada grupo de 7 colunas
-    for i in range(1, ((matrix.shape[1] - 1) // x) + 1):
-        for ii in range(1, x + 1):
-            ACDOM[:, (ii + ((i - 1) * x) + 1) - 1] = matrix[:, (ii + ((i - 1) * x) + 2) - 1] - matrix[:, (x * i - y) - 1]
+        # Itera para cada grupo de 7 colunas
+        for i in range(1, ((matrix.shape[1] - 1) // x) + 1):
+            for ii in range(1, x + 1):
+                ACDOM[:, (ii + ((i - 1) * x) + 1) - 1] = matrix[:, (ii + ((i - 1) * x) + 2) - 1] - matrix[:, (x * i - y) - 1]
 
-    wlg = ACDOM[:, 0]
+        wlg = ACDOM[:, 0]
 
-    L = 0.1 # Comprimento da Cubeta em metro
+        L = 0.1 # Comprimento da Cubeta em metro
 
-    acdom = ACDOM[:, 1:] * 2.303 / L
+        acdom = ACDOM[:, 1:] * 2.303 / L
 
-    p1 = np.where(wlg == 750)[0][0]  # Encontra o índice do primeiro valor igual a 750
-    p2 = np.where(wlg == 800)[0][0]  # Encontra o índice do primeiro valor igual a 800
+        p1 = np.where(wlg == 750)[0][0]  # Encontra o índice do primeiro valor igual a 750
+        p2 = np.where(wlg == 800)[0][0]  # Encontra o índice do primeiro valor igual a 800
 
-    acdom1 = np.empty_like(acdom)
+        acdom1 = np.empty_like(acdom)
 
-    for ii in range(acdom.shape[0]):
-        acdom1[ii, :] = acdom[ii, :] - np.mean(acdom[p1:p2, :], axis=0)
+        for ii in range(acdom.shape[0]):
+            acdom1[ii, :] = acdom[ii, :] - np.mean(acdom[p1:p2, :], axis=0)
 
-    df = pd.DataFrame(acdom1)
-    df.to_excel(path_cdom, index = False)
+        df = pd.DataFrame(acdom1)
+        df.to_excel(path_cdom, index = False)
 
-    A = np.empty((len(wlg), 2))
+        A = np.empty((len(wlg), 2))
 
-    acdomcor = np.zeros((299, 14))
+        acdomcor = np.zeros((299, 14))
 
-    A[:, 0] = wlg
+        A[:, 0] = wlg
 
-    I = np.where((A[:, 0] < 700) & (A[:, 0] > 400))[0]
+        I = np.where((A[:, 0] < 700) & (A[:, 0] > 400))[0]
 
-    x0 = [1.0, 0.03]
+        x0 = [1.0, 0.03]
 
-    for iii in range(acdom1.shape[1]):
+        for iii in range(acdom1.shape[1]):
 
-        A[:, 1] = acdom1[:, iii]
+            A[:, 1] = acdom1[:, iii]
 
-        wl = A[I, 0]
-        a_g = A[I, 1]
+            wl = A[I, 0]
+            a_g = A[I, 1]
 
-        opts = {'maxiter': 4000, 'maxfun': 2000, 'xtol': 1e-9}
+            opts = {'maxiter': 4000, 'maxfun': 2000, 'xtol': 1e-9}
 
-        x1 = fmin(least_squares, x0, args=(a_g, wl), **opts)
+            x1 = fmin(least_squares, x0, args=(a_g, wl), **opts)
 
-        acdomcor[:, iii] = a_g[np.where(wl == 440)[0][0]] * np.exp(-x1[1] * (wl - 440))
+            acdomcor[:, iii] = a_g[np.where(wl == 440)[0][0]] * np.exp(-x1[1] * (wl - 440))
+    except:
+        messagebox.showerror(title="Dado incorreto!!!", message="O arquivo selecionado para ánalise provavelmente não está organizado corretamente, certifique-se de que o arquivo está interpolado") 
+        return
 
     # Criando o gráfico
     figura = plt.figure()
@@ -120,3 +129,5 @@ def roda_CDOM_correto():
     dados_final.to_excel(path_dados_finais, header=False, index=False)
 
     plt.show()
+
+    return

@@ -58,7 +58,7 @@ def start():
     root = Tk()
 
     root.title("CDOM routine")
-    root.geometry("500x550")
+    root.geometry("500x580")
 
     font_titulo = ("Arial", "18")
     
@@ -101,7 +101,7 @@ def start():
     column_names = Label(third_container, text="Caminho do output do arquivo CDOM:", font=font, padx=20)
     column_names.pack()
 
-    path_cdom = Button(third_container, text="Selecione o Arquivo", font=font, command=lambda: path_output_excel("cdom"))
+    path_cdom = Button(third_container, text="Selecione o caminho", font=font, command=lambda: path_output_excel("cdom"))
     path_cdom.pack()
     
     column_names = Label(fourth_container, text="Caminho do output do arquivo dos dados finais:", font=font, padx=20)
@@ -120,7 +120,7 @@ def start():
     column_names = Label(sixth_container, text="Caminho do output do gráfico", font=font, padx=20)
     column_names.pack()
 
-    path_grafico = Button(sixth_container, text="Selecione o Arquivo", font=font, command=path_output_jpg)
+    path_grafico = Button(sixth_container, text="Selecione o caminho", font=font, command=path_output_jpg)
     path_grafico.pack()
 
     column_names = Label(seventh_container, text="Selecione o Arquivo para ánalise", font=font, padx=20)
