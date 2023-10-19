@@ -26,7 +26,7 @@ Observações:
 * Caso seja necessário, também é possível modificar o nome do ambiente (neste caso está com o nome cdom).
 
 ```console
-conda env create --name cdom --file cdom.yam
+conda env create --name cdom --file environment.yaml
 ```
 
 Após isso, ative o ambiente:

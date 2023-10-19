@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from tkinter import messagebox
 
 def roda_CDOM_correto():
+    # Função que calcula a soma dos quadrados das diferenças entre os valores observados (spec) e os valores previstos com base nos parâmetros x0.
     def least_squares(x0, spec, l):
         y = np.sum((spec - x0[0] * np.exp(-x0[1] * (l - 532))) ** 2)
         return y
@@ -33,12 +34,14 @@ def roda_CDOM_correto():
 
     np.set_printoptions(suppress=True, precision=4)
 
+    # Checagem para ver se o arquivo selecionado é .csv
     try:
         dados = pd.read_csv(path_arquivo, sep=";") 
     except:
         messagebox.showerror(title="Formato de arquivo errado!!", message="O arquivo selecionado para ánalise não está no formato "".csv"" ")
         return
 
+    # Check para ver se os dados do arquivo selecionado está organizada(interpolado)
     try:
         # Criação da matriz preenchida com NaN
         matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
@@ -69,6 +72,7 @@ def roda_CDOM_correto():
 
         acdom1 = np.empty_like(acdom)
 
+        # Calcula a diferença entre cada linha de acdom e a média das linhas entre p1 e p2
         for ii in range(acdom.shape[0]):
             acdom1[ii, :] = acdom[ii, :] - np.mean(acdom[p1:p2, :], axis=0)
 
@@ -86,16 +90,15 @@ def roda_CDOM_correto():
         x0 = [1.0, 0.03]
 
         for iii in range(acdom1.shape[1]):
-
+            # Preenche a segunda coluna da matriz A com os valores de atenuação de CDOM
             A[:, 1] = acdom1[:, iii]
 
             wl = A[I, 0]
             a_g = A[I, 1]
-
             opts = {'maxiter': 4000, 'maxfun': 2000, 'xtol': 1e-9}
-
             x1 = fmin(least_squares, x0, args=(a_g, wl), **opts)
 
+            # Calcula a atenuação de CDOM corrigida e armazena os resultados em acdomcor
             acdomcor[:, iii] = a_g[np.where(wl == 440)[0][0]] * np.exp(-x1[1] * (wl - 440))
     except:
         messagebox.showerror(title="Dado incorreto!!!", message="O arquivo selecionado para ánalise provavelmente não está organizado corretamente, certifique-se de que o arquivo está interpolado") 
@@ -129,5 +132,3 @@ def roda_CDOM_correto():
     dados_final.to_excel(path_dados_finais, header=False, index=False)
 
     plt.show()
-
-    return
