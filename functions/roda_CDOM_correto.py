@@ -26,13 +26,17 @@ def roda_CDOM_correto():
         elif chave == 'titulo_grafico': titulo_grafico = valor.strip()
         elif chave == 'path_grafico': path_grafico = valor.strip()
         elif chave == 'path_arquivo': path_arquivo = valor.strip()
+        elif chave == 'amostra_agua': amostra_agua = valor.strip()
     x = num_grps_amos + 1
     y = num_grps_amos - 1
+
+    valores_amostra_agua = amostra_agua.strip().split(',')
+    amostra_agua = [int(valor) for valor in valores_amostra_agua]
 
     root = tk.Tk()
     root.withdraw()
 
-    np.set_printoptions(suppress=True, precision=4)
+    # np.set_printoptions(suppress=True, precision=4)
 
     # Checagem para ver se o arquivo selecionado é .csv
     try:
@@ -40,9 +44,19 @@ def roda_CDOM_correto():
     except:
         messagebox.showerror(title="Formato de arquivo errado!!", message="O arquivo selecionado para ánalise não está no formato "".csv"" ")
         return
-
+    
     # Check para ver se os dados do arquivo selecionado está organizada(interpolado)
     try:
+        num_colunas = len(dados.columns)
+
+        num_linhas_wave = len(dados.iloc[:, 0])
+
+        segunda_linha_wave = dados.iloc[0, 0]
+        quatrocentos = 400 - segunda_linha_wave
+
+        ultima_linha_wave = dados.iloc[-1, 0]
+        setecentos = quatrocentos + 300
+
         # Criação da matriz preenchida com NaN
         matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
 
@@ -65,7 +79,7 @@ def roda_CDOM_correto():
 
         L = 0.1 # Comprimento da Cubeta em metro
 
-        acdom = ACDOM[:, 1:] * 2.303 / L
+        acdom = ACDOM[:, 0:] * 2.303 / L
 
         p1 = np.where(wlg == 750)[0][0]  # Encontra o índice do primeiro valor igual a 750
         p2 = np.where(wlg == 800)[0][0]  # Encontra o índice do primeiro valor igual a 800
@@ -81,11 +95,11 @@ def roda_CDOM_correto():
 
         A = np.empty((len(wlg), 2))
 
-        acdomcor = np.zeros((299, 14))
+        acdomcor = np.zeros((num_linhas_wave, num_colunas-1))
 
         A[:, 0] = wlg
 
-        I = np.where((A[:, 0] < 700) & (A[:, 0] > 400))[0]
+        I = np.where((A[:, 0] < ultima_linha_wave+1) & (A[:, 0] > segunda_linha_wave-1))[0]
 
         x0 = [1.0, 0.03]
 
@@ -103,32 +117,52 @@ def roda_CDOM_correto():
     except:
         messagebox.showerror(title="Dado incorreto!!!", message="O arquivo selecionado para ánalise provavelmente não está organizado corretamente, certifique-se de que o arquivo está interpolado") 
         return
+    
+    nome = []
+
+    for k in range(1, len(dados.columns[1:])+1):
+        nome.append(dados.columns[k][dados.columns[k].find('_')+1:])
+
+    acdomcor = pd.DataFrame(acdomcor)
+
+    colunas_a_apagar = []
+
+    colunas_a_apagar = amostra_agua
+
+    # Apagar os nomes de colunas correspondentes
+    nome = [nome[i] for i in range(len(nome)) if i not in colunas_a_apagar]
+
+    acdomcor = acdomcor.drop(acdomcor.columns[colunas_a_apagar], axis=1)
 
     # Criando o gráfico
     figura = plt.figure()
-    plt.plot(wl, acdomcor, linewidth=2)
+    plt.plot(wl, acdomcor, linewidth=2, label=nome)
 
     # Configurações do gráfico
-    plt.title(titulo_grafico, fontname='AvantGarde', fontsize=20, fontweight='bold')
+    plt.title(titulo_grafico, fontname='AvantGarde', fontweight='bold')
     plt.xlabel('Comprimento de Onda (nm)', fontname='Helvetica', fontsize=18)
     plt.ylabel('a$_{cdom}$ (m$^{-1}$)', fontname='Helvetica', fontsize=18)
     plt.tick_params(labelsize=16)
     plt.xticks(np.arange(400, 701, step=50))
-    plt.yticks(np.arange(0, np.max(acdomcor)+1, step=0.2))
+    plt.yticks(np.arange(0, np.max(acdomcor.iloc[quatrocentos:setecentos])+1, step=0.2))
     plt.xlim(400, 700)
-    plt.ylim(0, np.max(acdomcor))
+    plt.ylim(0, np.max(acdomcor.iloc[quatrocentos:setecentos]))
     plt.grid(True, which='both', linestyle='--', color=[0.3, 0.3, 0.3])
     plt.minorticks_on()
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().xaxis.set_tick_params(width=1)
     plt.gca().yaxis.set_tick_params(width=1)
+    plt.legend()
 
     plt.savefig(path_grafico)
+
+    add = "Wave"
+    nome.insert(0, add)   
 
     # Salvando dados no excel
     dados_final = pd.DataFrame(wl)
     dados_final = pd.concat([dados_final, pd.DataFrame(acdomcor)], axis=1)
-    dados_final.to_excel(path_dados_finais, header=False, index=False)
+    dados_final.to_excel(path_dados_finais, header=nome, index=False)
 
     plt.show()

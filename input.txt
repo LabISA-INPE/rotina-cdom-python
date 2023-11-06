@@ -1,4 +1,5 @@
 num_grps_amos=
+amostra_agua=
 path_cdom=
 path_dados_finais=
 titulo_grafico=

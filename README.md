@@ -49,6 +49,9 @@ Depois de executar o código main.py, uma interface gráfica irá aparecer com o
 
 **Número de grupo de amostras**: onde você deve colocar o número de amostras;
 
+**Número de amostras de água**: coloque o número das colunas das amostras de água. Ex: coluna B: 0, coluna I: 7, coluna P: 14. Entrada: 0, 7, 14;  
+*Atenção!!*: a coluna zero é a segunda coluna do arquivo de leitura, pois o código segue a lógica de que a coluna A(-1) é a "Wave".
+
 **Caminho do output do arquivo CDOM**: selecione/criei o caminho e de o nome do arquivo que será salvo com os dados do CDOM;
 
 **Caminho do output do arquivo dos dados finais**: selecione/criei o caminho e de o nome do arquivo que será salvo com os dados finais da rotina;
