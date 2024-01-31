@@ -4,4 +4,4 @@ path_cdom= C:/Users/kauar/OneDrive/Documentos/INPE/rotinas/rotina-cdom-python/ou
 path_dados_finais= C:/Users/kauar/OneDrive/Documentos/INPE/rotinas/rotina-cdom-python/outputs/dados_finais.xlsx
 titulo_grafico= Coeficiente de Absorv ncia do CDOM - Promissao (Ago/22)
 path_grafico= C:/Users/kauar/OneDrive/Documentos/INPE/rotinas/rotina-cdom-python/outputs/grafico.jpg
-path_arquivo= C:/Users/kauar/OneDrive/Documentos/INPE/rotinas/rotina-cdom-python/input-exemplo/Leituras_22_08_2022_orga
+path_arquivo= C:/Users/kauar/OneDrive/Documentos/INPE/rotinas/rotina-cdom-python/input-exemplo/Leituras_22_08_2022_organizado.csv

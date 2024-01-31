@@ -52,10 +52,10 @@ def roda_CDOM_correto():
         num_linhas_wave = len(dados.iloc[:, 0])
 
         segunda_linha_wave = dados.iloc[0, 0]
-        quatrocentos = 220 - segunda_linha_wave
+        duzentos = 220 - segunda_linha_wave
 
         ultima_linha_wave = dados.iloc[-1, 0]
-        setecentos = quatrocentos + 580
+        oitocentos = duzentos + 580
 
         # Criação da matriz preenchida com NaN
         matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
@@ -144,9 +144,9 @@ def roda_CDOM_correto():
     plt.ylabel('a$_{cdom}$ (m$^{-1}$)', fontname='Helvetica', fontsize=18)
     plt.tick_params(labelsize=16)
     plt.xticks(np.arange(220, 801, step=50))
-    plt.yticks(np.arange(0, np.max(acdom.iloc[quatrocentos:setecentos])+1, step=5))
+    plt.yticks(np.arange(0, np.max(acdom.iloc[duzentos:oitocentos])+1, step=5))
     plt.xlim(220, 800)
-    plt.ylim(0, np.max(acdom.iloc[quatrocentos:setecentos]))
+    plt.ylim(0, np.max(acdom.iloc[duzentos:oitocentos]))
     plt.grid(True, which='both', linestyle='--', color=[0.3, 0.3, 0.3])
     plt.minorticks_off()
     plt.gca().spines['top'].set_visible(False)
