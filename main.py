@@ -100,45 +100,47 @@ def start():
     # Labels explicativos
     column_names = Label(first_container, text="Rotina para Análise de CDOM", font=font_titulo, padx=20)
     column_names.pack()
+
+    column_names = Label(second_container, text="Selecione o Arquivo para ánalise", font=font, padx=20)
+    column_names.pack()
+
+    # Botão para selecionar um arquivo para análise
+    path_arquivo = Button(second_container, text="Selecione o arquivo", font=font, command=upload_file)
+    path_arquivo.pack()
+
+    # Label para exibir o nome do arquivo selecionado
+    filename_text = Label(second_container, text='', font=font)
+    filename_text.pack()
     
-    column_names = Label(second_container, text="Colunas dos grupos de amostra:", font=font, padx=20)
+    column_names = Label(third_container, text="Colunas dos grupos de amostra:", font=font, padx=20)
     column_names.pack()
 
     # Entrada para o número de grupos de amostras
-    numero_grupos_amostras = Entry(second_container, font=font, width=7, justify=CENTER)
+    numero_grupos_amostras = Entry(third_container, font=font, width=7, justify=CENTER)
     numero_grupos_amostras.insert(0, 6)
     numero_grupos_amostras.pack()
 
-    column_names = Label(third_container, text="Número de amostras de água:", font=font, padx=20)
+    column_names = Label(fourth_container, text="Número de amostras de água:", font=font, padx=20)
     column_names.pack()
 
     # Entrada para o número amostras de água
-    amostra_agua = Entry(third_container, font=font, width=14, justify=CENTER)
+    amostra_agua = Entry(fourth_container, font=font, width=14, justify=CENTER)
     amostra_agua.insert(0, "0, 7, 14")
     amostra_agua.pack()
     
-    column_names = Label(fourth_container, text="Caminho do output do arquivo CDOM:", font=font, padx=20)
+    column_names = Label(fifth_container, text="Caminho do output do arquivo CDOM:", font=font, padx=20)
     column_names.pack()
 
     # Botões para selecionar caminhos de arquivo do cdom
-    path_cdom = Button(fourth_container, text="Selecione o caminho", font=font, command=lambda: path_output_excel("cdom"))
+    path_cdom = Button(fifth_container, text="Selecione o caminho", font=font, command=lambda: path_output_excel("cdom"))
     path_cdom.pack()
     
-    column_names = Label(fifth_container, text="Caminho do output do arquivo dos dados finais:", font=font, padx=20)
+    column_names = Label(sixth_container, text="Caminho do output do arquivo dos dados finais:", font=font, padx=20)
     column_names.pack()
 
     # Botões para selecionar caminhos de arquivo dos dados finais
-    path_dados_finais = Button(fifth_container, text="Selecione o local", font=font, command=lambda: path_output_excel("dados"))
+    path_dados_finais = Button(sixth_container, text="Selecione o local", font=font, command=lambda: path_output_excel("dados"))
     path_dados_finais.pack()
-
-    # Entrada para o título do gráfico
-    column_names = Label(sixth_container, text="Título do gráfico:", font=font, padx=20)
-    column_names.pack()
-
-    # Entrada para o título do gráfico
-    titulo_grafico = Entry(sixth_container, font=font, width=70, justify=CENTER)
-    titulo_grafico.insert(10, "Coeficiente de Absorvência do CDOM - Promissao (Ago/22)")
-    titulo_grafico.pack()
 
     column_names = Label(seventh_container, text="Caminho do output do gráfico", font=font, padx=20)
     column_names.pack()
@@ -146,17 +148,15 @@ def start():
     # Botões para selecionar caminhos de arquivo do grafico
     path_grafico = Button(seventh_container, text="Selecione o caminho", font=font, command=path_output_jpg)
     path_grafico.pack()
-
-    column_names = Label(eighth_container, text="Selecione o Arquivo para ánalise", font=font, padx=20)
+    
+    # Entrada para o título do gráfico
+    column_names = Label(eighth_container, text="Título do gráfico:", font=font, padx=20)
     column_names.pack()
 
-    # Botão para selecionar um arquivo para análise
-    path_arquivo = Button(eighth_container, text="Selecione o arquivo", font=font, command=upload_file)
-    path_arquivo.pack()
-
-    # Label para exibir o nome do arquivo selecionado
-    filename_text = Label(eighth_container, text='', font=font)
-    filename_text.pack()
+    # Entrada para o título do gráfico
+    titulo_grafico = Entry(eighth_container, font=font, width=70, justify=CENTER)
+    titulo_grafico.insert(10, "Coeficiente de Absorvência do CDOM - Promissao (Ago/22)")
+    titulo_grafico.pack()
 
     global path_arquivo_output_cdom
     global path_arquivo_output_dados

@@ -52,10 +52,10 @@ def roda_CDOM_correto():
         num_linhas_wave = len(dados.iloc[:, 0])
 
         segunda_linha_wave = dados.iloc[0, 0]
-        quatrocentos = 400 - segunda_linha_wave
+        quatrocentos = 220 - segunda_linha_wave
 
         ultima_linha_wave = dados.iloc[-1, 0]
-        setecentos = quatrocentos + 300
+        setecentos = quatrocentos + 580
 
         # Criação da matriz preenchida com NaN
         matrix = np.full((dados.shape[0], dados.shape[1]), np.nan)
@@ -123,7 +123,7 @@ def roda_CDOM_correto():
     for k in range(1, len(dados.columns[1:])+1):
         nome.append(dados.columns[k][dados.columns[k].find('_')+1:])
 
-    acdomcor = pd.DataFrame(acdomcor)
+    acdom = pd.DataFrame(acdom)
 
     colunas_a_apagar = []
 
@@ -132,23 +132,23 @@ def roda_CDOM_correto():
     # Apagar os nomes de colunas correspondentes
     nome = [nome[i] for i in range(len(nome)) if i not in colunas_a_apagar]
 
-    acdomcor = acdomcor.drop(acdomcor.columns[colunas_a_apagar], axis=1)
+    acdom = acdom.drop(acdom.columns[colunas_a_apagar], axis=1)
 
     # Criando o gráfico
     figura = plt.figure()
-    plt.plot(wl, acdomcor, linewidth=2, label=nome)
+    plt.plot(wl, acdom, linewidth=2, label=nome)
 
     # Configurações do gráfico
     plt.title(titulo_grafico, fontname='AvantGarde', fontweight='bold')
     plt.xlabel('Comprimento de Onda (nm)', fontname='Helvetica', fontsize=18)
     plt.ylabel('a$_{cdom}$ (m$^{-1}$)', fontname='Helvetica', fontsize=18)
     plt.tick_params(labelsize=16)
-    plt.xticks(np.arange(400, 701, step=50))
-    plt.yticks(np.arange(0, np.max(acdomcor.iloc[quatrocentos:setecentos])+1, step=0.2))
-    plt.xlim(400, 700)
-    plt.ylim(0, np.max(acdomcor.iloc[quatrocentos:setecentos]))
+    plt.xticks(np.arange(220, 801, step=50))
+    plt.yticks(np.arange(0, np.max(acdom.iloc[quatrocentos:setecentos])+1, step=5))
+    plt.xlim(220, 800)
+    plt.ylim(0, np.max(acdom.iloc[quatrocentos:setecentos]))
     plt.grid(True, which='both', linestyle='--', color=[0.3, 0.3, 0.3])
-    plt.minorticks_on()
+    plt.minorticks_off()
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().xaxis.set_tick_params(width=1)
@@ -162,7 +162,7 @@ def roda_CDOM_correto():
 
     # Salvando dados no excel
     dados_final = pd.DataFrame(wl)
-    dados_final = pd.concat([dados_final, pd.DataFrame(acdomcor)], axis=1)
+    dados_final = pd.concat([dados_final, pd.DataFrame(acdom)], axis=1)
     dados_final.to_excel(path_dados_finais, header=nome, index=False)
 
     plt.show()
