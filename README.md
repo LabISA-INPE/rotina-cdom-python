@@ -48,6 +48,9 @@ Além disso, há um exemplo de saída da entrada de exemplo na pasta output-exem
 ## Interface
 
 Depois de executar o código main.py, uma interface gráfica irá aparecer para que o usuário entre com algumas informações.
+
+<img src="/docs/primeira_tela_interativa.jpg" alt="Janela interativa para entrada de informações.">
+
 Essas informações serão dadas de acordo com a organização da tabela dos dados de entrada.
 
 ## Preparando a tabela com as medidas
@@ -91,9 +94,7 @@ Coloque o número das colunas das amostras de água. Ex: coluna B: 0, coluna I: 
 
 ## Iniciando o processamento em Python
 
-Para iniciar o processamento, execute o código "main.py". A seguinte janela interativa será apresentada:
-
-<img src="/docs/primeira_tela_interativa.jpg" alt="Janela interativa para entrada de informações.">
+Para iniciar o processamento, execute o código "main.py".
 
 **Atenção:** O dado de entrada deve ser selecionado corretamente, caso contrário, uma mensagem de "Arquivo não encontrado" será exibida no console. Também deve ser criada uma pasta "outputs", onde, por padrão, ficarão salvos os dados de saída do processamento (que podem ser alterados no arquivo "input.txt").
 
