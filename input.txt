@@ -1,7 +1,7 @@
 num_grps_amos= 6
 amostra_agua= 0, 7, 14
-path_cdom= C:/Users/neyra/Desktop/Rotinas/rotina-cdom-python/outputs-exemplo/220_cdom_teste.xlsx
-path_dados_finais= C:/Users/neyra/Desktop/Rotinas/rotina-cdom-python/outputs-exemplo/220_dados_finais_teste.xlsx
+path_cdom= D:/Claudia/INPE/LabIsa/Rotinas/rotina-cdom-python/outputs/teste03.xlsx
+path_dados_finais= D:/Claudia/INPE/LabIsa/Rotinas/rotina-cdom-python/outputs/teste03_df.xlsx
 titulo_grafico= Coeficiente de Absorvência do CDOM - Promissao (Ago/22)
-path_grafico= C:/Users/neyra/Desktop/Rotinas/rotina-cdom-python/outputs-exemplo/220_grafico_teste.jpg
-path_arquivo= C:/Users/neyra/Desktop/Rotinas/rotina-cdom-python/input-exemplo/Leituras_22_08_2022_organizado.csv
+path_grafico= D:/Claudia/INPE/LabIsa/Rotinas/rotina-cdom-python/outputs/teste03_grafico.jpg
+path_arquivo= D:/Claudia/INPE/LabIsa/Rotinas/rotina-cdom-python/input-exemplo/Leituras_22_08_2022_organizado2.csv

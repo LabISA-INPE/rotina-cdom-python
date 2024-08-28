@@ -46,7 +46,7 @@ def roda_CDOM_correto():
         return
     
     # Check para ver se os dados do arquivo selecionado está organizada(interpolado)
-    try:
+    if True:
         num_colunas = len(dados.columns)
 
         num_linhas_wave = len(dados.iloc[:, 0])
@@ -114,7 +114,7 @@ def roda_CDOM_correto():
 
             # Calcula a atenuação de CDOM corrigida e armazena os resultados em acdomcor
             acdomcor[:, iii] = a_g[np.where(wl == 440)[0][0]] * np.exp(-x1[1] * (wl - 440))
-    except:
+    else: #except:
         messagebox.showerror(title="Dado incorreto!!!", message="O arquivo selecionado para ánalise provavelmente não está organizado corretamente, certifique-se de que o arquivo está interpolado") 
         return
     
