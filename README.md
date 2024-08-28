@@ -63,7 +63,7 @@ A amostra de branco deve ser escolhida pelo usuário, levando em consideração 
 Um exemplo da tabela pode ser visto na figura abaixo em (a) - como a tabela sai do espectrofotômetro - e (b) - como ela deve ser organizada:
 
 <img src="/docs/exemploa_tabela.jpg" alt="Exemplo da tabela antes (a).">
-<img src="/docs/exemploa_tabelb.jpg" alt="Exemplo da tabela depois de organizada (b).">
+<img src="/docs/exemplob_tabela.jpg" alt="Exemplo da tabela depois de organizada (b).">
 
 Mais detalhes sobre a organização das tabelas, podem ser encontrados no tutorial disponível na pasta [docs](/docs/Tutorial_CDOM.pdf).
 
