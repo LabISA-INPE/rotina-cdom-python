@@ -1,180 +1,150 @@
-from tkinter import *
-from tkinter import filedialog
 import os
-
+import sys
+from pathlib import Path
 from functions.dados import dados
 
-path_arquivo_output_cdom = ''
-path_arquivo_output_dados = ''
-selected_file_path = ''
-path_arquivo_caminho = ''
+def load_config_from_input_txt(file_path="input.txt"):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Configuration file not found: {file_path}")
 
-# Especifique o nome da pasta que você deseja criar
-nome_pasta = "outputs"
+    config = {}
 
-# Verifica se a pasta já existe antes de tentar criá-la
-if not os.path.exists(nome_pasta):
-    os.mkdir(nome_pasta)
-    print(f'A pasta "{nome_pasta}" foi criada com sucesso.\n')
-else:
-    print(f'A pasta "{nome_pasta}" já existe.\n')
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
 
-def start():
+    for line in lines:
+        line = line.strip()
+        if line and "=" in line:
+            key, value = line.split("=", 1)
+            config[key.strip()] = value.strip()
 
-    def upload_file():
-        global path_arquivo_caminho  # Declara path_arquivo como uma variável global
+        
+    return config
+
+def check_dependencies():
+    required_modules = ["numpy", "pandas", "matplotlib", "scipy"]
+    missing_modules = []
+
+    for module in required_modules:
         try:
-            filename = filedialog.askopenfilename()
-            filename_text["text"] = filename.split('/')[-1]
-            path_arquivo_caminho = filename  # Atribui o valor a path_arquivo
-            print(path_arquivo_caminho)
-        except FileNotFoundError:
-            print("Arquivo não encontrado")
-
-    # Função para selecionar/criar os arquivos/caminhos que ficaram salvos os dados
-    def path_output_excel(file_type):
-        global path_arquivo_output_cdom
-        global path_arquivo_output_dados
-        try:
-            if file_type == "cdom":
-                # Abre uma janela de diálogo para selecionar o caminho do arquivo de saída para CDOM
-                file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel Files", "*.xlsx")])
-                path_arquivo_output_cdom = file_path
-                print(path_arquivo_output_cdom)
-            elif file_type == "dados":
-                # Abre uma janela de diálogo para selecionar o caminho do arquivo de saída para dados
-                file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel Files", "*.xlsx")])
-                path_arquivo_output_dados = file_path
-                print(path_arquivo_output_dados)
-        except FileNotFoundError:
-            print("Arquivo não foi criado")
-
-    # Função que cria/seleciona o arquivo/caminho onde ficaraá salvo o gráfico
-    def path_output_jpg():
-        global selected_file_path
-        try:
-            # Abre uma janela de diálogo para selecionar o caminho do arquivo de saída no formato JPEG
-            file_path = filedialog.asksaveasfilename(defaultextension=".jpg", filetypes=[("JPEG Files", "*.jpg")])
-            selected_file_path = file_path
-            print(selected_file_path)
-        except FileNotFoundError:
-            print("Arquivo não foi criado")
+            __import__(module)
+        except ImportError:
+            missing_modules.append(module)
     
-    root = Tk()
+    if missing_modules:
+        for module in missing_modules:
+            print(f"-{module}")
+        print("Please instal missing modules")
+        return False
 
-    root.title("CDOM routine")
-    root.geometry("500x640")
+    print("All required dependencies are available")
+    return True
 
-    # Definição de estilos de fonte
-    font_titulo = ("Arial", "18")    
-    font = ("Arial", "11")
+def run_cdom_analysis():
+    try:
+        print("CDOM ANALYSIS - STARTING")
+
+        # Check dependencies
+        if not check_dependencies():
+            return {"status": "error", "messagge": "Missing dependencies"}
     
-    # Containers para organizar widgets
-    first_container = Frame(root, padx=10, pady=12)
-    first_container.pack()
+        # Load configuration from input.txt
+        config = load_config_from_input_txt()
 
-    second_container = Frame(root, padx=12, pady=12)
-    second_container.pack()
+        # Print configuration symmary
+        print("\nConfiguration loaded:")
+        print(f"  • Sample groups: {config.get('num_grps_amos')}")
+        print(f"  • Water samples: {config.get('amostra_agua')}")
+        print(f"  • Input file: {config.get('path_arquivo')}")
+        print(f"  • Plot title: {config.get('titulo_grafico')}")
+        print(f"  • Output CDOM: {config.get('path_cdom')}")
+        print(f"  • Output final data: {config.get('path_dados_finais')}")
+        print(f"  • Output plot: {config.get('path_grafico')}")
 
-    third_container = Frame(root, padx=12, pady=12)
-    third_container.pack()
+        # Check if input file exists
+        input_file = config.get("path_arquivo")
+        if not os.path.exists(input_file):
+            raise FileNotFoundError(f"Input data file not found: {input_file}")
 
-    fourth_container = Frame(root, padx=12, pady=12)
-    fourth_container.pack()
+        print(f"Input file found: {input_file}")
 
-    fifth_container = Frame(root, padx=12, pady=12)
-    fifth_container.pack()
+        # Create output directory if the don't exist
+        output_paths = ["path_cdom", "path_daddos_finais", "path_grafico"]
+        for path_key in output_paths:
+            if path_key in config:
+                output_dir = os.path.dirname(config[path_key])
+                if output_dir and not os.path.exists(output_dir):
+                    os.makedirs(output_dir, exist_ok=True)
+                    print(f"Created output directory: {output_dir}")
 
-    sixth_container = Frame(root, padx=12, pady=12)
-    sixth_container.pack()
+        
+        print("\n Starting CDOM analysis...")
 
-    seventh_container = Frame(root, padx=12, pady=12)
-    seventh_container.pack()
+        dados(
+            num_grps_amos=config['num_grps_amos'],
+            amostra_agua=config['amostra_agua'],
+            path_cdom=config['path_cdom'],
+            path_dados_finais=config['path_dados_finais'],
+            titulo_grafico=config['titulo_grafico'],
+            path_grafico=config['path_grafico'],
+            path_arquivo=config['path_arquivo']    
+        )
 
-    eighth_container = Frame(root, padx=12, pady=12)
-    eighth_container.pack()
+        # Check if output files were created
+        print("ANALYSIS COMPLETED!")
 
-    nine_container = Frame(root, padx=12, pady=4)
-    nine_container.pack()
+        output_files = {
+            "CDOM data": config["path_cdom"],
+            "Final data": config["path_dados_finais"],
+            "Plot": config["path_grafico"]
+        }
+
+        all_files_created = True
+        for file_type, file_path in output_files.items():
+            if os.path.exists(file_path):
+                file_size = os.path.getsize(file_path)
+                print(f"  ✅ {file_type}: {file_path} ({file_size:,} bytes)")
+            else:
+                print(f"  ❌ {file_type}: {file_path} (NOT FOUND)")
+                all_files_created = False
+
+        if all_files_created:
+            return {'status': 'success', 'message': 'Analysis completed successfully'}
+        else:
+            return {'status': 'warning', 'message': 'Analysis completed but some output files are missing'}
+
+    except FileNotFoundError as e:
+        print(f"File not found: {e}")
+        return{"status": "error", "message": str(e)}
+
+    except Exception as e:
+        print("Error during analysis: {e}")
+        return{"status": "error", "message": str(e)}
+
+def main():
+    print("CDOM analysis application")
+
+    # Run analysis
+    try:
+        results = run_cdom_analysis()
+
+        if results["status"] == "success":
+            print("\n Analysis completed successfully")
+            sys.exit(0)
+        elif results["status" == "warning"]:
+            print(f"\n Analysis completed with warnings: {results.get("message")}")
+            sys.exit(0)
+        else:
+            print(f"\n Analysis failed: {results.get('message', 'Unknown error')}")
+            sys.exit(1)
+
+    except KeyboardInterrupt:
+        print("\n Analysis interrupted by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n Unexpected error: {e}")
+        sys.exit(1)
     
-    # Labels explicativos
-    column_names = Label(first_container, text="Rotina para Análise de CDOM", font=font_titulo, padx=20)
-    column_names.pack()
-
-    column_names = Label(second_container, text="Selecione o Arquivo para ánalise", font=font, padx=20)
-    column_names.pack()
-
-    # Botão para selecionar um arquivo para análise
-    path_arquivo = Button(second_container, text="Selecione o arquivo", font=font, command=upload_file)
-    path_arquivo.pack()
-
-    # Label para exibir o nome do arquivo selecionado
-    filename_text = Label(second_container, text='', font=font)
-    filename_text.pack()
-    
-    column_names = Label(third_container, text="Colunas dos grupos de amostra:", font=font, padx=20)
-    column_names.pack()
-
-    # Entrada para o número de grupos de amostras
-    numero_grupos_amostras = Entry(third_container, font=font, width=7, justify=CENTER)
-    numero_grupos_amostras.insert(0, 6)
-    numero_grupos_amostras.pack()
-
-    column_names = Label(fourth_container, text="Número de amostras de água:", font=font, padx=20)
-    column_names.pack()
-
-    # Entrada para o número amostras de água
-    amostra_agua = Entry(fourth_container, font=font, width=14, justify=CENTER)
-    amostra_agua.insert(0, "0, 7, 14")
-    amostra_agua.pack()
-    
-    column_names = Label(fifth_container, text="Caminho do output do arquivo CDOM:", font=font, padx=20)
-    column_names.pack()
-
-    # Botões para selecionar caminhos de arquivo do cdom
-    path_cdom = Button(fifth_container, text="Selecione o caminho", font=font, command=lambda: path_output_excel("cdom"))
-    path_cdom.pack()
-    
-    column_names = Label(sixth_container, text="Caminho do output do arquivo dos dados finais:", font=font, padx=20)
-    column_names.pack()
-
-    # Botões para selecionar caminhos de arquivo dos dados finais
-    path_dados_finais = Button(sixth_container, text="Selecione o local", font=font, command=lambda: path_output_excel("dados"))
-    path_dados_finais.pack()
-
-    column_names = Label(seventh_container, text="Caminho do output do gráfico", font=font, padx=20)
-    column_names.pack()
-
-    # Botões para selecionar caminhos de arquivo do grafico
-    path_grafico = Button(seventh_container, text="Selecione o caminho", font=font, command=path_output_jpg)
-    path_grafico.pack()
-    
-    # Entrada para o título do gráfico
-    column_names = Label(eighth_container, text="Título do gráfico:", font=font, padx=20)
-    column_names.pack()
-
-    # Entrada para o título do gráfico
-    titulo_grafico = Entry(eighth_container, font=font, width=70, justify=CENTER)
-    titulo_grafico.insert(10, "Coeficiente de Absorvência do CDOM - Promissao (Ago/22)")
-    titulo_grafico.pack()
-
-    global path_arquivo_output_cdom
-    global path_arquivo_output_dados
-    global selected_file_path
-    global path_arquivo_caminho
-
-    # Botão para iniciar a rotina com os parâmetros e caminhos especificados
-    save_button = Button(nine_container, text="Iniciar rotina", font=font, command=lambda: dados(
-        num_grps_amos=numero_grupos_amostras.get(), 
-        amostra_agua=amostra_agua.get(), 
-        path_cdom=path_arquivo_output_cdom, 
-        path_dados_finais=path_arquivo_output_dados, 
-        titulo_grafico=titulo_grafico.get(), 
-        path_grafico=selected_file_path, 
-        path_arquivo=path_arquivo_caminho
-    ))
-    save_button.pack()
-
-    root.mainloop()
-
-start()
+if __name__ == "__main__":
+    main()
+            
